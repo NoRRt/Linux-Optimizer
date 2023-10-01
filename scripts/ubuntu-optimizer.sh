@@ -63,8 +63,6 @@ fix_dns () {
     echo 'nameserver 8.8.8.8' >>$DNS_PATH
     echo 'nameserver 1.0.0.1' >>$DNS_PATH
     echo 'options timeout:5'  >>$DNS_PATH
-    echo 'search google.com.svc.cluster.local svc.cluster.local cluster.local eu-west-1.compute.internal' >>$DNS_PATH
-
     echo
     echo  "$(tput setaf 2)----- System DNS Optimized.$(tput sgr0)"
     echo
