@@ -68,21 +68,6 @@ ask_reboot() {
 }
 
 
-# Timezone
-set_timezone() {
-    echo 
-    yellow_msg 'Setting TimeZone to Asia/Tehran.'
-    echo
-    sleep 0.5
-
-    timedatectl set-timezone Asia/Tehran
-
-    echo 
-    green_msg 'TimeZone set to Asia/Tehran.'
-    echo
-    sleep 0.5
-}
-
 
 # Update & Upgrade & Remove & Clean
 complete_update() {
@@ -146,26 +131,6 @@ enable_packages() {
     sudo systemctl enable cron haveged nftables preload
     echo 
     green_msg 'Packages Enabled Succesfully.'
-    echo
-    sleep 0.5
-}
-
-
-## Swap Maker
-swap_maker() {
-    echo 
-    yellow_msg 'Making SWAP Space.'
-    echo 
-    sleep 0.5
-
-    # Make Swap
-    sudo fallocate -l $SWAP_SIZE $SWAP_PATH  # Allocate size
-    sudo chmod 600 $SWAP_PATH                # Set proper permission
-    sudo mkswap $SWAP_PATH                   # Setup swap         
-    sudo swapon $SWAP_PATH                   # Enable swap
-    echo "$SWAP_PATH   none    swap    sw    0   0" >> /etc/fstab # Add to fstab
-    echo 
-    green_msg 'SWAP Created Successfully.'
     echo
     sleep 0.5
 }
@@ -386,9 +351,8 @@ show_menu() {
     green_msg '3 - Everything Without Useful Packages & UFW Optimizations.'
     green_msg '4 - Update the OS.'
     green_msg '5 - Install Useful Packages.'
-    green_msg '6 - Make SWAP (2Gb).'
-    green_msg '7 - Optimize the Network, SSH & System Limits.'
-    green_msg '8 - Optimize UFW.'
+    green_msg '6 - Optimize the Network, SSH & System Limits.'
+    green_msg '7 - Optimize UFW.'
     echo 
     red_msg 'q - Exit.'
     echo 
@@ -415,9 +379,6 @@ main() {
             complete_update
             sleep 0.5
 
-            swap_maker
-            sleep 0.5
-
             sysctl_optimizations
             sleep 0.5
 
@@ -442,9 +403,6 @@ main() {
             ;;
         3)
             complete_update
-            sleep 0.5
-
-            swap_maker
             sleep 0.5
 
             sysctl_optimizations
@@ -490,18 +448,8 @@ main() {
 
             ask_reboot
             ;;
+
         6)
-            swap_maker
-            sleep 0.5
-
-            echo 
-            green_msg '========================='
-            green_msg  'Done.'
-            green_msg '========================='
-
-            ask_reboot
-            ;;
-        7)
         
             sysctl_optimizations
             sleep 0.5
@@ -522,7 +470,7 @@ main() {
 
             ask_reboot
             ;;
-        8)
+        7)
             ufw_optimizations
             sleep 0.5
 
@@ -548,8 +496,6 @@ main() {
 # Apply Everything
 apply_everything() {
     
-    set_timezone
-    sleep 0.5
 
     complete_update
     sleep 0.5
@@ -558,9 +504,6 @@ apply_everything() {
     sleep 0.5
 
     enable_packages
-    sleep 0.5
-
-    swap_maker
     sleep 0.5
 
     sysctl_optimizations
