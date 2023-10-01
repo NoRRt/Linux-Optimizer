@@ -27,6 +27,7 @@ SYS_PATH="/etc/sysctl.conf"
 LIM_PATH="/etc/security/limits.conf"
 PROF_PATH="/etc/profile"
 SSH_PATH="/etc/ssh/sshd_config"
+DNS_PATH="/etc/resolv.conf"
 SWAP_PATH="/swapfile"
 SWAP_SIZE=2G
 
@@ -48,6 +49,27 @@ check_if_running_as_root() {
 check_if_running_as_root
 sleep 0.5
 
+#Fix DNS
+fix_dns () {
+    echo
+    echo "$(tput setaf 3)----- Optimizing System DNS Settings.$(tput sgr0)"
+    echo
+    sleep 1
+
+    sed -i '/nameserver/d' $DNS_PATH
+
+    echo 'nameserver 8.8.4.4' >>$DNS_PATH
+    echo 'nameserver 1.1.1.1' >>$DNS_PATH
+    echo 'nameserver 8.8.8.8' >>$DNS_PATH
+    echo 'nameserver 1.0.0.1' >>$DNS_PATH
+    echo 'options timeout:5'  >>$DNS_PATH
+    echo 'search namespace.svc.cluster.local svc.cluster.local cluster.local eu-west-1.compute.internal' >>$DNS_PATH
+
+    echo
+    echo  "$(tput setaf 2)----- System DNS Optimized.$(tput sgr0)"
+    echo
+    sleep 1
+}
 
 # Ask Reboot
 ask_reboot() {
@@ -105,7 +127,7 @@ installations() {
     sleep 0.5
 
     # Networking packages
-    sudo apt -y install apt-transport-https iptables iptables-persistent nftables
+    sudo apt -y install apt-transport-https iptables iptables-persistent nftables 
 
     # System utilities
     sudo apt -y install apt-utils bash-completion busybox ca-certificates cron curl gnupg2 locales lsb-release nano preload screen software-properties-common ufw unzip vim wget xxd zip
@@ -496,6 +518,8 @@ main() {
 # Apply Everything
 apply_everything() {
     
+    fix_dns
+    sleep 0.5
 
     complete_update
     sleep 0.5
